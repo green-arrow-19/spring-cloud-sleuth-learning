@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: "client"
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:-default},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-B3-Exportable:-},%X{X-B3-TripId:-}]"

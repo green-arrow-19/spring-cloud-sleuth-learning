@@ -1,0 +1,16 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: "client"
+  sleuth:
+    propagation-keys:
+      - X-B3-TripId
+    log.slf4j.whitelisted-mdc-keys:
+      - X-B3-TripId
+
+#logging.level.org.springframework.cloud.sleuth: DEBUG
+#
+#management.endpoints.web.base-path: /
+#management.endpoints.web.exposure.include: "*"

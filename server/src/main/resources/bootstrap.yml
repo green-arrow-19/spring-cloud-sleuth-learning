@@ -1,0 +1,14 @@
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:-default},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-B3-Exportable:-},%X{X-B3-TripId:-}]"
+
+spring:
+  application:
+    name: "server-1"
+  sleuth:
+    propagation-keys:
+      - X-B3-TripId
+    log:
+      slf4j:
+        whitelisted-mdc-keys:
+          - X-B3-TripId

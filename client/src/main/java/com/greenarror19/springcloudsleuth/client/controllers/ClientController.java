@@ -7,21 +7,34 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import brave.Tracer;
+import brave.propagation.ExtraFieldPropagation;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/client")
 public class ClientController {
     @Autowired
     private RestTemplate restTemplate;
-
+    @Autowired
+    private WebClient webClient;
+    @Autowired
+    private Tracer tracer;
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientController.class);
 
     @GetMapping("/getData")
-    public String getData(){
-        LOGGER.info("Getting data form client");
+    public Mono<String> getData(){
+        LOGGER.info("Getting data form client {}",tracer.currentSpan().context());
         LOGGER.info("Calling server 1 form client");
-        String temp = restTemplate.getForObject("http://localhost:8082/server1/getData",String.class);
-        LOGGER.info("Returning data from client");
-        return "In-client-micro-service "+temp;
+
+        return webClient.get()
+                 .uri("http://localhost:8082/server1/getData")
+                 .exchange()
+                 .doOnSuccess(clientResponse -> {
+                     LOGGER.info("Got response from service2 [{}]", clientResponse);
+                     LOGGER.info("Service1: Baggage for [key] is [" + ExtraFieldPropagation.get("key") + "]");
+                 })
+                 .flatMap(clientResponse -> clientResponse.bodyToMono(String.class));
     }
 }
