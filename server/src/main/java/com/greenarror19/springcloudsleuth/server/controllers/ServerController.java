@@ -28,7 +28,6 @@ public class ServerController {
     
     @GetMapping("/getData")
     public String getData(){
-        MDC.put("X-B3-TripId", "1212");
     
         LOGGER.info("Getting data from server 1");
         LOGGER.info("Calling server 2 from server 1");
